@@ -1,0 +1,36 @@
+%%{init: { 'themeVariables': { 'primaryColor': '#1f2937', 'edgeLabelBackground': '#f3f4f6' }}}%%
+
+flowchart LR
+  subgraph Client
+    A[Mobile App] -->|WebRTC/HLS| B[Edge Ingestion]
+    A -->|REST/WebSocket| G[API Gateway]
+    C[Web App] -->|HLS/WebRTC| B
+    C -->|REST/WebSocket| G
+  end
+
+  subgraph Ingestion & Media
+    B --> D[Media Processing Workers]
+    D --> E[S3 (recordings & assets)]
+    D --> F[HLS Packaging / CDN]
+  end
+
+  subgraph Backend Services
+    G --> H[Auth Service]
+    G --> I[Product Service]
+    G --> J[Order Service]
+    G --> K[Social Service]
+    G --> L[Notification Service]
+  end
+
+  subgraph Data Stores
+    I --> P[(Postgres)]
+    J --> P
+    K --> P
+    H --> Q[(Redis)]
+    E --> R[(S3 Bucket)]
+    F --> CDN[CDN]
+  end
+
+  CDN --> A
+  CDN --> C
+  note right of J: Payments via Stripe
